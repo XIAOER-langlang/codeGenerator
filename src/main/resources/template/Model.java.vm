@@ -1,0 +1,38 @@
+package ${package}.model;
+
+import lombok.Data;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
+
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+import java.util.Date;
+
+/**
+ * 传递模型
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Data
+@TableName("${tableName}")
+public class ${className}Model implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+
+#foreach ($column in $columns)
+    /**
+     * $column.comments
+     */
+    @ApiModelProperty(value = "$column.comments")
+    private $column.attrType $column.attrname;
+#end
+
+}
+

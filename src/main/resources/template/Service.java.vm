@@ -1,0 +1,97 @@
+package ${package}.${moduleName}.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import ${package}.${moduleName}.entity.${className}Entity;
+import ${package}.${moduleName}.model.${className}Model;
+import ${package}.${moduleName}.vo.${className}Vo;
+import ${package}.ydgs.utils.PageUtils;
+import ${package}.ydgs.exception.BizException;
+import ${package}.ydgs.base.ValidList;
+
+
+
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Service extends IService<${className}Entity> {
+
+
+    /**
+     * 查询${className}分页接口
+     * @param params
+     * @return PageInfoResult
+     */
+    PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * 列表接口
+     * @param params
+     * @return
+     */
+    List<${className}Model> queryList(Map<String, Object> params);
+
+    /**
+     * 增加${className}接口
+     *
+     * @param vo
+     * @throws
+     * @return int
+     */
+    int insertEntity(${className}Vo vo);
+
+    /**
+     * 批量增加${className}接口
+     * @param vos
+     * @return
+     */
+    boolean batchInsertEntity(List<${className}Vo> vos) throws BizException;
+
+    /**
+     * 软删除${className}entity
+     * @param id
+     * @return int
+     */
+    int deletedEntity(Long id);
+
+    /**
+     * 批量删除
+     * @param ids
+     */
+    boolean deleteByIds(Long[] ids);
+
+    /**
+     * 修改${className}entity接口
+     * @param vo
+     * @return int
+     */
+    int updateEntity(${className}Vo vo);
+
+    /**
+     * 批量修改
+     * @param vos
+     */
+    boolean updateBatchByIds(ValidList<${className}Vo> vos) throws BizException;
+
+    /**
+     * 查询${className}详情接口
+     * @param id
+     * @return GwywYdgsSettingModel
+     */
+    ${className}Model selectDetailById(Long id);
+
+    /**
+     * id校验,校验该id 是否存在
+     * @param id
+     * @return
+     */
+    Boolean validatorId(Long id);
+}
+

@@ -1,0 +1,221 @@
+package ${package}.${moduleName}.controller;
+
+import java.util.List;
+import java.util.Map;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import com.baomidou.mybatisplus.extension.api.R;
+import com.gwyw.project.ydgs.utils.PageUtils;
+import ${package}.${moduleName}.vo.${className}Vo;
+import ${package}.${moduleName}.model.${className}Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.apache.ibatis.annotations.Update;
+import ${package}.ydgs.base.ValidList;
+import ${package}.ydgs.utils.PageInfoResult;
+import ${package}.ydgs.result.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ${package}.${moduleName}.service.${className}Service;
+
+import javax.annotation.Resource;
+
+
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@RestController
+@RequestMapping("/${className}")
+@Api(tags ="${comments}")
+public class ${className}Controller {
+
+    private static Logger log = LoggerFactory.getLogger(${className}Controller.class);
+
+    @Resource
+    private ${className}Service ${classname}Service;
+
+
+
+    /**
+     * 查询${className}分页接口
+     * @param params
+     * @return PageInfoResult
+     */
+    @GetMapping("/page")
+    @ApiOperation(value = "分页接口")
+    public R queryPage(@RequestParam Map<String, Object> params){
+        try {
+            PageUtils pageUtils = ${classname}Service.queryPage(params);
+            return Result.success("获取分页成功!",pageUtils);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.success(e.getMessage());
+        }
+    }
+
+    /**
+    * 查询GwywYdgsWorkInfo列表接口
+    * @param params
+    * @return PageInfoResult
+    */
+    @GetMapping("/list")
+    @ApiOperation(value = "列表接口")
+    public R  queryList(@RequestParam Map<String, Object> params){
+        try {
+            List<${className}Model> resultModelList  = ${classname}Service.queryList(params);
+            return Result.success("获取列表成功!",resultModelList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.success(e.getMessage());
+        }
+
+    }
+
+
+
+    /**
+     * 增加${className}接口
+     *
+     * @param vo
+     * @throws
+     * @return Long(id)
+     */
+    @PostMapping
+    @ApiOperation(value = "新增接口")
+    public R insertEntity(@RequestBody ${className}Vo vo){
+        try {
+            ${classname}Service.insertEntity(vo);
+            return Result.success("创建成功!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.success(e.getMessage());
+        }
+    }
+
+    /**
+     * 批量增加${className}接口
+     *
+     * @param vos
+     * @throws
+     * @return
+     */
+    @PostMapping("/save-batch")
+    @ApiOperation(value = "批量新增接口")
+    public R insertEntity(@RequestBody List<${className}Vo> vos){
+        try {
+            ${classname}Service.batchInsertEntity(vos);
+            return Result.success("创建成功!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.success(e.getMessage());
+        }
+    }
+
+    /**
+     * 软删除${className}Entity
+     * @param id
+     * @return int
+     */
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "删除接口")
+    public R deletedEntity(@PathVariable("id") Long id){
+        validateId(id);
+        try {
+            ${classname}Service.deletedEntity(id);
+            return Result.success("删除成功!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.success(e.getMessage());
+        }
+
+    }
+
+    /**
+     * 批量删除${className}Entity
+     */
+    @DeleteMapping("/delete-batch")
+    public R deleteByIds(@RequestBody Long[] ids) {
+        try {
+            this.${classname}Service.deleteByIds(ids);
+            return Result.success("批量删除成功。");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.failed(e.getMessage());
+        }
+    }
+
+
+    /**
+     * 修改${className}Entity接口
+     * @param vo
+     * @return int
+     */
+    @PutMapping
+    @ApiOperation(value = "根据id修改接口")
+    public R updateEntity(@RequestBody ${className}Vo vo){
+        int createResult = ${classname}Service.updateEntity(vo);
+        if (createResult > 0) {
+            return Result.success("修改成功!",createResult);
+        }else {
+            return Result.failed("修改失败");
+        }
+    }
+
+    /**
+     * 批量修改
+     */
+    @PutMapping("/update-batch")
+    public R updateBatchByIds(@RequestBody @Validated(Update.class) ValidList<${className}Vo> vos) {
+        try {
+            this.${classname}Service.updateBatchByIds(vos);
+            return Result.success("批量修改数据成功。");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.failed(e.getMessage());
+        }
+    }
+
+
+    /**
+     * 查询${className}详情接口
+     * @param id
+     * @return ${classname}Model
+     */
+    @GetMapping("/{id}")
+    @ApiOperation(value = "详情接口")
+    public R selectDetailById(@PathVariable("id") Long id){
+        validateId(id);
+        try {
+            ${className}Model model = ${classname}Service.selectDetailById(id);
+            return Result.success("查询成功!",model);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.success(e.getMessage());
+        }
+    }
+
+    /**
+    * 公共的代码块的提取
+    *
+    * @param id
+    * @throws
+    */
+    private void validateId(Long id)  {
+        if (null == id) {
+            throw new RuntimeException("ID必填");
+        }
+        // 根据应用id查询应用
+        Boolean result = ${classname}Service.validatorId(id);
+        if (!result) {
+            throw new RuntimeException("此id下内容不存在"+id);
+        }
+
+    }
+
+}

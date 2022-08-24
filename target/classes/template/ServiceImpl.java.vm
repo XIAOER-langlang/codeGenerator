@@ -1,0 +1,243 @@
+package ${package}.${moduleName}.service.impl;
+
+import cn.hutool.core.collection.CollUtil;
+import com.gwyw.project.ydgs.enums.DataStatusEnum;
+
+import org.springframework.stereotype.Service;
+import com.gwyw.project.ydgs.utils.PageUtils;
+import com.gwyw.project.ydgs.exception.BizException;
+import com.gwyw.project.ydgs.utils.Query;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.gwyw.project.ydgs.constants.ValidatorConstant;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.gwyw.project.ydgs.enums.YesOrNoEnum;
+
+import com.gwyw.project.ydgs.utils.BeanCopyUtil;
+
+import java.util.*;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import ${package}.ydgs.utils.PageInfoResult;
+import ${package}.ydgs.base.ValidList;
+import ${package}.ydgs.enums.DataStatusEnum;
+
+
+import ${package}.${moduleName}.model.${className}Model;
+import ${package}.${moduleName}.mapper.${className}Mapper;
+import ${package}.${moduleName}.entity.${className}Entity;
+import ${package}.${moduleName}.service.${className}Service;
+import ${package}.${moduleName}.vo.${className}Vo;
+import org.springframework.transaction.annotation.Transactional;
+import javax.annotation.Resource;
+
+
+@Service("${classname}Service")
+public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}Entity> implements ${className}Service {
+
+
+    @Resource
+    private ${className}Mapper ${classname}Mapper;
+
+    /**
+     * 分页查询
+     * @param params
+     * @return
+     */
+    @Override
+    public PageUtils queryPage(Map<String, Object> params) {
+        LambdaQueryWrapper<${className}Entity> laq = Wrappers.lambdaQuery();
+        if (null != params.get(ValidatorConstant.ID)){
+            laq.eq(${className}Entity::getId,params.get(ValidatorConstant.ID));
+        }
+        laq.eq(${className}Entity::getIsDeleted,YesOrNoEnum.No.getNum());
+        laq.orderByDesc(${className}Entity::getCreateTime);
+        IPage<${className}Entity> page = this.page(new Query<${className}Entity>().getPage(params), laq);
+        if (CollUtil.isEmpty(page.getRecords())) {
+            return new PageUtils(new Page<${className}Model>());
+        }
+        Page<${className}Model> modelsPageResult = convertToApplicationModelPage(page);
+        return new PageUtils(modelsPageResult);
+    }
+
+    /**
+     * 列表查询
+     * @param params
+     * @return
+     */
+    @Override
+    public List<${className}Model> queryList(Map<String, Object> params) {
+        LambdaQueryWrapper<${className}Entity> laq = Wrappers.lambdaQuery();
+        if (null != params.get(ValidatorConstant.ID)){
+            laq.eq(${className}Entity::getId,params.get(ValidatorConstant.ID));
+        }
+        laq.eq(${className}Entity::getIsDeleted,YesOrNoEnum.No.getNum());
+        laq.orderByDesc(${className}Entity::getCreateTime);
+        List<${className}Entity> list = baseMapper.selectList(laq);
+        if (CollUtil.isEmpty(list)) {
+            return new ArrayList<${className}Model>();
+        }
+        return BeanCopyUtil.copyListProperties(list, ${className}Model::new);
+    }
+
+    /**
+     * 新增
+     * @param vo
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int insertEntity(${className}Vo vo) {
+            ${className}Entity entity = new ${className}Entity();
+        BeanCopyUtil.copyProperties(vo,entity);
+        entity.setCreateTime(new Date());
+        entity.setCreateUser(1L);
+        entity.setStatus(DataStatusEnum.ONE.getCode());
+        entity.setIsDeleted(YesOrNoEnum.No.getNum());
+        int insertResult = baseMapper.insert(entity);
+        return insertResult;
+    }
+
+    /**
+    * 批量新增
+    * @param vos
+    * @return
+    * @throws
+    */
+    @Override
+    public boolean batchInsertEntity(List<${className}Vo> vos) throws BizException {
+        if (CollUtil.isEmpty(vos)){
+            throw new BizException("新增集合数据为空");
+        }
+        List<${className}Entity> entities = BeanCopyUtil.copyListProperties(vos, ${className}Entity::new);
+        entities.forEach(o-> resolveEntity(o));
+        return super.saveBatch(entities);
+    }
+
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @Override
+    public int deletedEntity(Long id) {
+        return baseMapper.deleteById(id);
+    }
+
+    /**
+     * 批量删除
+     * @param ids
+     * @return
+     */
+    @Override
+    public boolean deleteByIds(Long[] ids) {
+        return baseMapper.deleteBatchIds(Arrays.asList(ids)) > 0;
+
+    }
+
+    /**
+     * 修改
+     * @param vo
+     * @return
+     */
+    @Override
+    public int updateEntity(${className}Vo vo) {
+        ${className}Entity entity = new ${className}Entity();
+        BeanCopyUtil.copyProperties(vo,entity);
+        entity.setUpdateTime(new Date());
+        entity.setUpdateUser(1L);
+
+        return ${classname}Mapper.updateById(entity);
+    }
+
+    /**
+     * 批量修改
+     * @param vos
+     */
+    @Override
+    public boolean updateBatchByIds(ValidList<${className}Vo> vos) throws BizException {
+        if (CollUtil.isEmpty(vos)){
+            throw new BizException("修改集合数据为空");
+        }
+        List<${className}Entity> entities = BeanCopyUtil.copyListProperties(vos, ${className}Entity::new);
+        entities.forEach(o-> resolveEntity(o));
+        return super.updateBatchById(entities);
+    }
+
+    /**
+     * 查询
+     * @param id
+     */
+    @Override
+    public ${className}Model selectDetailById(Long id) {
+        LambdaQueryWrapper<${className}Entity> lq = Wrappers.lambdaQuery();
+        lq.eq(${className}Entity::getId,id);
+        lq.eq(${className}Entity::getIsDeleted,YesOrNoEnum.No.getNum());
+        ${className}Entity entity = baseMapper.selectOne(lq);
+        ${className}Model resultModel = new ${className}Model();
+        BeanCopyUtil.copyProperties(entity,resultModel);
+        return resultModel;
+    }
+    /**
+     * 查询是否存在
+     * @param id
+     */
+    @Override
+    public Boolean validatorId(Long id) {
+        LambdaQueryWrapper<${className}Entity> lq = Wrappers.lambdaQuery();
+        lq.eq(${className}Entity::getId,id);
+        lq.eq(${className}Entity::getIsDeleted,YesOrNoEnum.No.getNum());
+        Integer count = baseMapper.selectCount(lq);
+        if (count <= 0){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * entity转换为model对象
+     *
+     * @param page
+     * @return
+     */
+    private Page<${className}Model> convertToApplicationModelPage(IPage<${className}Entity> page) {
+        //将应用结果集转换为model结果集
+        List<${className}Entity> records = page.getRecords();
+        //转换model
+        List<${className}Model> applicationModels = BeanCopyUtil.copyListProperties(records, ${className}Model::new);
+        //重新封装分页对象
+        Page<${className}Model> modelsPageResult = new Page<>();
+        modelsPageResult.setRecords(applicationModels);
+        modelsPageResult.setCurrent(page.getCurrent());
+        modelsPageResult.setTotal(page.getTotal());
+        modelsPageResult.setSize(page.getSize());
+        modelsPageResult.setPages(page.getPages());
+        return modelsPageResult;
+    }
+
+    /**
+    * 封装基础字段,删除标识,修改,创建人,修改,创建时间
+    * @param entity
+    * @param <T>
+    */
+    public <T extends ${className}Entity> void resolveEntity(T entity) {
+
+        Date now = new Date();
+        if (Objects.isNull(entity.getId())) {
+//            if (user != null) {
+//                entity.setCreateUser(user.getUserId());
+//                entity.setUpdateUser(user.getUserId());
+//            }
+            entity.setCreateTime(now);
+        }
+//        else if (user != null) {
+//            entity.setUpdateUser(user.getUserId());
+//        }
+        entity.setUpdateTime(now);
+        entity.setStatus(DataStatusEnum.ONE.getCode());
+        entity.setIsDeleted(YesOrNoEnum.No.getNum());
+    }
+
+}
