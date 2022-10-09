@@ -44,6 +44,17 @@ public class SysGeneratorController {
 		
 		return R.ok().put("page", pageUtil);
 	}
+
+	/**
+	 * web页面 输入数据库账号密码 动态查询
+	 */
+	@ResponseBody
+	@RequestMapping("/dynamic/list")
+	public R dynamicList(@RequestParam Map<String, Object> params){
+		PageUtils pageUtil = sysGeneratorService.queryList(new Query(params));
+
+		return R.ok().put("page", pageUtil);
+	}
 	
 	/**
 	 * 生成代码
